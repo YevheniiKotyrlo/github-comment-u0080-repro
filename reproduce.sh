@@ -17,7 +17,7 @@ if ! gh_version="$(gh --version 2>&1)" || ! curl_version="$(curl --version 2>&1)
     exit 2
 fi
 system="$(uname -sm)"
-curl_version="${curl_version%%$'\n'*}"
+curl_version="$(grep -m 1 '^curl ' <<<"${curl_version}")"
 echo "${system}, ${gh_version%%$'\n'*}, ${curl_version%% (*}, ${jq_version}"
 if ! sent="$(cat "${sent_file}")"; then
     echo "step failed: reading ${sent_file}"
