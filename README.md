@@ -1,17 +1,11 @@
 # github-comment-u0080-repro
 
-Checks whether an issue comment, and a discussion's title and body, holding `\u0080` as text are stored as they were sent.
+Checks whether `gh` reads an issue comment holding `\u0080` and other backslash-u text as GitHub returns it.
 
 ```bash
 ./reproduce.sh OWNER/REPO ISSUE_NUMBER
 ```
 
-It posts `sent-body.md`, which holds `\u0000`, `\u001f`, `\u0041`, `\u007f`, `\u0080`, `\u0081`, `\u009f`, `\u00a0`, `\u00ff`, `\u0100` and `\uffff` as text on its first line and once more one per line in a fenced code block:
+It posts `sent-body.md`, which holds `\u0000`, `\u001f`, `\u0041`, `\u007f`, `\u0080`, `\u0081`, `\u009f`, `\u00a0`, `\u00ff`, `\u0100` and `\uffff` as text on its first line and once more one per line in a fenced code block, as a comment on the issue with `gh issue comment --body-file`. It reads the comment back from `GET /repos/{owner}/{repo}/issues/comments/{comment_id}` with `curl` and `jq`, checks that GitHub returns it as sent, reads it again with `gh api`, and prints every line `gh` reads other than GitHub returns it. It exits 1 while `gh` reads a line other than GitHub returns, 0 once it reads the comment as GitHub returns it, 2 when a step fails or GitHub returns the comment other than as it was sent. The repository must be public, since `curl` reads it without a token, and `gh` signed in with a token that can comment on the issue.
 
-- as a comment on the issue through `gh issue comment --body-file`, which posts with GraphQL's `addComment`;
-- as a comment on the issue through the REST API's `POST /repos/{owner}/{repo}/issues/{issue_number}/comments`;
-- where the repository has discussions on, as a discussion in its first category through GraphQL's `createDiscussion`, titled with the file's first line.
-
-It reads each back, the comments with `GET /repos/{owner}/{repo}/issues/comments/{comment_id}` and the discussion through GraphQL, and prints every line stored other than as it was sent. It exits 1 while a post is stored with a line other than the one sent, 0 once every post is stored as sent, 2 when a step fails. It needs `gh` signed in with a token that can comment on the issue and start a discussion.
-
-Issue #1 and the discussions of this repository hold what its runs posted.
+Issue #1 of this repository holds the comments its runs posted.
