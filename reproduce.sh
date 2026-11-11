@@ -7,8 +7,9 @@ set -u
 usage="usage: ./reproduce.sh OWNER/REPO ISSUE_NUMBER"
 repository="${1:?${usage}}"
 issue="${2:?${usage}}"
-here="$(cd "$(dirname "$0")" && pwd)"
-sent_file="${here}/sent-body.md"
+# gh is handed a path relative to the reproducer, which reads the same on every system.
+cd "$(dirname "$0")" || exit 2
+sent_file="sent-body.md"
 
 if ! gh_version="$(gh --version 2>&1)"; then
     echo "step failed: gh --version: ${gh_version}"
